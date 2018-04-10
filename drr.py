@@ -99,7 +99,10 @@ class MoveToRequest(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state MOVE_TO_REQUEST')
         self.task = userdata.taskIn
+        #adding the move here
+        move(self.task[0],self.task[1])
         print self.task
+        
         
         if self.counter == 0:
             self.counter += 1
