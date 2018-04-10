@@ -24,9 +24,9 @@ yPos = -1
 cv2.namedWindow("Map")
 cv2.setMouseCallback("Map", getCursor)
 map = cv2.imread("map.png")
+cv2.imshow("Map", map)
 
-while(haveCursor):
-    cv2.imshow("Map", map)
+while(haveCursor):   
     k = cv2.waitKey(5) & 0xFF
     if k == 27:
         break

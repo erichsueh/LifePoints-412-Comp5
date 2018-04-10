@@ -39,23 +39,33 @@ class WaitForRequest(smach.State):
 
     def nextTaskCallback(self, msg):
         self.task = msg.data
+        print self.task
+
+    def sendRequest(self):
+        msg = String()
+        msg.data = "ready"
+        self.readyForTaskPub.publish(msg)
+
 
     def execute(self, userdata):
+        
         rospy.loginfo('Executing state WAIT_FOR_REQUEST')
-        self.task = ""
+        self.task = "-1"
         self.counter = 0
-        string = String()
-        string.data = "ready"
+        msg = String()
+        msg.data = "ready"
         print "sending ready"
-        self.readyForTaskPub.publish(string)
-        while(self.task == "" and self.counter <= 10):
+        print msg.data
+        while(self.task == "-1" and self.counter <= 10):
+            self.sendRequest()
             sleep(1)
             self.counter += 1
             print "waiting"
         
-        if(self.task == ""):
+        if(self.task == "-1"):
             return 'returnToBase'
         else:
+            print self.task
             userdata.taskOut = self.task
             return 'moveToRequest'
 
