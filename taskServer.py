@@ -16,7 +16,7 @@ def taskRequestedCallback(msg):
     tasksQueue.append([xPos, yPos])
 
     print tasksQueue[len(tasksQueue)-1][0]
-    print tasksQueue[len(tasksQueue)-1][0]
+    print tasksQueue[len(tasksQueue)-1][1]
 
 def readyForTaskCallback(msg):
     global tasksQueue
