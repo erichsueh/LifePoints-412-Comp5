@@ -48,14 +48,10 @@ class WaitForRequest(smach.State):
 
 
     def execute(self, userdata):
-        
         rospy.loginfo('Executing state WAIT_FOR_REQUEST')
         self.task = "-1"
         self.counter = 0
-        msg = String()
-        msg.data = "ready"
-        print "sending ready"
-        print msg.data
+        
         while(self.task == "-1" and self.counter <= 10):
             self.sendRequest()
             sleep(1)
@@ -66,7 +62,11 @@ class WaitForRequest(smach.State):
             return 'returnToBase'
         else:
             print self.task
-            userdata.taskOut = self.task
+            i = msg.find("x")
+            j = msg.find("y")
+            xPos = int(msg[i+1:j])
+            yPos = int(msg[j+1:])
+            userdata.taskOut = [float(xPos)*0.05 - 25, float(yPos)*-0.05 + 23]
             return 'moveToRequest'
 
 #define State ReturnToBase
