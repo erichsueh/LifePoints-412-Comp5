@@ -7,6 +7,7 @@ import smach_ros
 import cv2
 from time import sleep
 import os
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 def move(x,y):
     pose = [(x,y,0.0),(0.0,0.0,0.0,1.0)]
@@ -248,7 +249,9 @@ def main():
     global docked
     docked = True
     rospy.init_node('jeeves_botSM')
-
+    
+    init_posepub = rospy.Publisher('initialpose',PoseWithCovarianceStamped,queue_size =1)
+    
     #Create a smach state machine
     sm_stk = smach.StateMachine(outcomes=['exit'])
     with sm_stk:
