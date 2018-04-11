@@ -81,7 +81,8 @@ class ReturnToBase(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state RETURN_TO_BASE')
-
+        
+        #move to "docking location"
         sleep(2)
         return 'dockAtBase'
 
@@ -93,7 +94,7 @@ class DockAtBase(smach.State):
     def execute(self, userdata):
         global docked
         rospy.loginfo('Executing state DOCK_AT_BASE')
-
+        #run os system thing
         sleep(2)
         docked = True
         return 'waitForRequest'
@@ -109,15 +110,18 @@ class MoveToRequest(smach.State):
 
     def execute(self, userdata):
         #Remove when done testing
-        return 'waitForLoad'
+        #return 'waitForLoad'
         #//
         rospy.loginfo('Executing state MOVE_TO_REQUEST')
         self.task = userdata.taskIn
+        
         #adding the move here
         move(self.task[0],self.task[1])
         print self.task
+        userdata.taskStart = self.task
+        return 'waitForLoad'
         
-        
+        '''
         if self.counter == 0:
             self.counter += 1
             sleep(2)
@@ -127,7 +131,7 @@ class MoveToRequest(smach.State):
             sleep(2)
             userdata.taskStart = self.task
             return 'waitForLoad'
-
+        '''
 #define State WaitForLoad
 class WaitForLoad(smach.State):
     def __init__(self):
@@ -186,7 +190,10 @@ class MakeDelivery(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state MAKE_DELIVERY')
         self.dest = userdata.destIn
-
+        move(self.dest[0],self.dest[1])
+        return 'waitForUnload'
+        
+        '''
         if self.counter == 0:
             self.counter += 1
             sleep(2)
@@ -195,7 +202,7 @@ class MakeDelivery(smach.State):
             self.counter = 0
             sleep(2)
             return 'waitForUnload'
-
+        '''
 #define ReturnToSender
 class ReturnToSender(smach.State):
     def __init__(self):
@@ -203,10 +210,13 @@ class ReturnToSender(smach.State):
                                     input_keys=['taskStart'],
                                     output_keys=['taskStart'])
         self.counter = 0
-
+        self.start = [0,0]
     def execute(self, userdata):
         rospy.loginfo('Executing state RETURN_TO_SENDER')
-
+        self.start = userdata.taskStart
+        move(self.start[0],self.start[1])
+        return 'waitForRequest'
+        '''
         if self.counter == 0:
             self.counter += 1
             sleep(2)
@@ -215,7 +225,7 @@ class ReturnToSender(smach.State):
             self.counter = 0
             sleep(2)
             return 'waitForRequest'
-
+        '''
 #define WaitForUnload
 class WaitForUnload(smach.State):
     def __init__(self):
