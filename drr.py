@@ -85,10 +85,13 @@ class ReturnToBase(smach.State):
         self.counter = 0
 
     def execute(self, userdata):
+        global initpose
+        global client
+
         rospy.loginfo('Executing state RETURN_TO_BASE')
-        
+        client.send_goal(initpose)
+        client.wait_for_result()
         #move to "docking location"
-        sleep(2)
         return 'dockAtBase'
 
 #define State DockAtBase
@@ -100,7 +103,8 @@ class DockAtBase(smach.State):
         global docked
         rospy.loginfo('Executing state DOCK_AT_BASE')
         #run os system thing
-        sleep(2)
+        os.system("roslaunch kobuki_auto_docking activate.launch")
+        sleep(20)
         docked = True
         return 'waitForRequest'
 
@@ -252,6 +256,7 @@ class WaitForUnload(smach.State):
 def main():
     global docked
     global client
+    global initpose
     docked = True
     rospy.init_node('jeeves_botSM')
     
