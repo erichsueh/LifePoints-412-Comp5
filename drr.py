@@ -8,8 +8,12 @@ import cv2
 from time import sleep
 import os
 from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
+import actionlib
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from std_srvs.srv import Empty
 
 def move(x,y):
+    global client
     pose = [(x,y,0.0),(0.0,0.0,0.0,1.0)]
     print(pose)
     goal = goal_pose(pose)
@@ -247,9 +251,12 @@ class WaitForUnload(smach.State):
 
 def main():
     global docked
+    global client
     docked = True
     rospy.init_node('jeeves_botSM')
     
+    client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+    client.wait_for_server()
     init_posepub = rospy.Publisher('initialpose',PoseWithCovarianceStamped,queue_size =1)
     initpose = Pose()
     initpose.position.x = -1.80218
@@ -261,6 +268,9 @@ def main():
     initpose.orientation.w = 0.839361
     inPose = PoseWithCovarianceStamped()
     inPose.pose.pose = initpose
+    #rospy.wait_for_service('clear_costmaps')
+    #clear_costmaps = rospy.ServiceProxy('clear_costmaps',Empty)
+    #clear_costmaps()
     init_posepub.publish(inPose)
     
     #Create a smach state machine
