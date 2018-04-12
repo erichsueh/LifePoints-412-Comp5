@@ -89,7 +89,9 @@ class ReturnToBase(smach.State):
         global client
 
         rospy.loginfo('Executing state RETURN_TO_BASE')
-        client.send_goal(initpose)
+        home_pose = [(initpose.position.x, initpose.position.y, initpose.position.z), (initpose.orientation.x, initpose.orientation.y, initpose.orientation.z, initpose.orientation.w)]
+        home_pose = goal_pose(home_pose)
+        client.send_goal(home_pose)
         client.wait_for_result()
         #move to "docking location"
         return 'dockAtBase'
@@ -101,6 +103,8 @@ class DockAtBase(smach.State):
         
     def execute(self, userdata):
         global docked
+        docked = True
+        return 'waitForRequest'
         rospy.loginfo('Executing state DOCK_AT_BASE')
         #run os system thing
         os.system("roslaunch kobuki_auto_docking activate.launch")
@@ -264,18 +268,20 @@ def main():
     client.wait_for_server()
     init_posepub = rospy.Publisher('initialpose',PoseWithCovarianceStamped,queue_size =1)
     initpose = Pose()
-    initpose.position.x = -1.80218
-    initpose.position.y = -11.0176
+    initpose.position.x = -2.47022
+    initpose.position.y = -8.516673
     initpose.position.z = 0
     initpose.orientation.x = 0
     initpose.orientation.y = 0
-    initpose.orientation.z = -0.5435744
-    initpose.orientation.w = 0.839361
+    initpose.orientation.z = 0.206567
+    initpose.orientation.w = 0.9784323
     inPose = PoseWithCovarianceStamped()
     inPose.pose.pose = initpose
+    inPose.header.frame_id = "map"
     #rospy.wait_for_service('clear_costmaps')
     #clear_costmaps = rospy.ServiceProxy('clear_costmaps',Empty)
     #clear_costmaps()
+    sleep(3)
     init_posepub.publish(inPose)
     
     #Create a smach state machine
